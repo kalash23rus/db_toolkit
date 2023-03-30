@@ -117,6 +117,35 @@ def insert_json_to_table(dict_obj,table_name,json_attr_name,param_dic):
 def dict_to_json(value: dict):
     return json.dumps(value)
             
+def insert_dictionary_into_postgres(dict_obj, table_name, jsonb_column_name,param_dic):
+    # Connect to the PostgreSQL database
+    conn = psycopg2.connect(
+        host=param_dic["host"],
+        database=param_dic["database"],
+        user=param_dic["user"],
+        password=param_dic["password"],
+        port=param_dic["port"]
+    )
+
+    # Open a cursor to perform database operations
+    cur = conn.cursor()
+
+    # Generate a query string for inserting the JSON object
+    query = f"INSERT INTO {table_name} ({jsonb_column_name}) VALUES (%s)"
+
+    # Convert the dictionary to a JSON string
+    json_str = json.dumps(dict_obj)
+
+    # Execute the query with the JSON string as a parameter
+    cur.execute(query, (json_str,))
+
+    # Commit the transaction
+    conn.commit()
+
+    # Close the cursor and the connection
+    cur.close()
+    conn.close()
+    
 def insert_json_to_table(dict_obj,table_name,json_attr_name,param_dic):
     json_obj = dict_to_json(value=dict_obj)
     SQL_command = f'''
