@@ -9,9 +9,6 @@ import psycopg2.extras as extras
 
 __version__ = 'dev'
 
-def dict_to_json(value: dict):
-    return json.dumps(value)
-
 def array_generator4sql(items: list):
     if len(items) > 1:
         items = tuple(items)
@@ -95,31 +92,6 @@ def copy_from_stringio(param_dic, df, table):
     print("copy_from_stringio() done")
     cursor.close()
 
-
-def insert_json_to_table(dict_obj,table_name,json_attr_name,param_dic):
-    json_obj = dict_to_json(value=dict_obj)
-    SQL_command = f'''
-        INSERT INTO
-            {table_name}({json_attr_name}) 
-        VALUES
-            ('{json_obj}')
-    '''
-  
-    try:
-            conn = create_connection(param_dic)
-            cur = conn.cursor()
-            cur.execute(SQL_command)
-            conn.commit()
-            cur.close()
-    except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
-    finally:
-        if conn is not None:
-            conn.close()
-            
-def dict_to_json(value: dict):
-    return json.dumps(value)
-            
 def insert_dictionary_into_postgres(dict_obj, table_name, jsonb_column_name,param_dic):
     # Connect to the PostgreSQL database
     conn = psycopg2.connect(
@@ -149,65 +121,6 @@ def insert_dictionary_into_postgres(dict_obj, table_name, jsonb_column_name,para
     cur.close()
     conn.close()
     
-def insert_json_to_table(dict_obj,table_name,json_attr_name,param_dic):
-    json_obj = dict_to_json(value=dict_obj)
-    SQL_command = f'''
-        INSERT INTO
-            {table_name}({json_attr_name}) 
-        VALUES
-            ('{json_obj}')
-    '''
-  
-    try:
-            conn = create_connection(param_dic)
-            cur = conn.cursor()
-            cur.execute(SQL_command)
-            conn.commit()
-            cur.close()
-    except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
-    finally:
-        if conn is not None:
-            conn.close()
-
-def doble_apostroph(container):
-    """finds any COMMA lurking in any string anywhere in a standard sequence object,
-    including in a nested sequence of sequences of arbitrary depth, and DESTROYS it"""
-
-    copy = deepcopy(container)
-
-    if isinstance(copy, str):
-        return copy.replace("'", "''")
-    else:
-        if isinstance(copy, list):
-            for i, v in enumerate(copy):
-                copy[i] = doble_apostroph(v)
-        elif isinstance(copy, tuple):
-            copy = list(copy)
-            for i, v in enumerate(copy):
-                copy[i] = doble_apostroph(v)
-            copy = tuple(copy)
-        elif isinstance(copy, dict):
-            for k in copy.keys():
-                copy[k] = doble_apostroph(copy[k])
-
-    return copy
-
-def remove_N(item):
-    new_annotations = []
-    for ann in item['annotations']:
-        new_annotations.append({k: v for k, v in ann.items() if pd.notna(v)})
-    item['annotations'] = new_annotations
-    
-    return item
-
-def array_generator4sql(items: list):
-    if len(items) > 1:
-        items = tuple(items)
-    else:
-        items.append(items[0])
-        items = tuple(items)
-    return items
 
 def connect(params_dic):
     """ Connect to the PostgreSQL database server """
