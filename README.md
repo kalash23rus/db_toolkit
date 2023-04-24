@@ -1,7 +1,7 @@
 # kalashnikov_toolkit
 
-
-
+## pip installing
+pip install git+https://github.com/kalash23rus/db_toolkit.git
 ## Getting started
 
 To make it easy for you to get started with GitLab, here's a list of recommended next steps.
