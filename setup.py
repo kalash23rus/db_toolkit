@@ -14,7 +14,6 @@ setup(
     install_requires=[
             'psycopg2-binary==2.9.3',
             'pandas>=1.0',
-            'requests>=2.27.1',
-            'neo4j'
+            'requests>=2.27.1'
             ],
 )
