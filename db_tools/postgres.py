@@ -1,11 +1,60 @@
 import psycopg2
+import psycopg2.extras as extras
 import pandas as pd
 from io import StringIO
 import json
-import psycopg2.extras as extras
+from urllib.parse import quote_plus
+from sqlalchemy import create_engine, types
+from sqlalchemy.dialects.postgresql import JSONB
+
 
 __version__ = 'dev'
 
+def config_to_uri(param_dic):
+    """
+    Convert a configuration dictionary into a database URI.
+
+    Parameters:
+    param_dic (dict): Configuration dictionary.
+
+    Returns:
+    str: Database URI.
+    """
+    template = "postgresql://{user}:{password}@{host}:{port}/{database}"
+    return template.format(**param_dic)
+
+def try_parse_json(text):
+    try:
+        return json.loads(text)
+    except (ValueError, TypeError):
+        return text
+
+def insert_df_jsons(df, table_name, param_dic):
+    """
+    Insert a DataFrame with json or not into a database table using SQLAlchemy.
+
+    Parameters:
+    df (pandas.DataFrame): DataFrame to insert.
+    table_name (str): Name of the table to insert into.
+    db_uri (str): Database URI.
+    """
+    db_uri = config_to_uri(param_dic)
+    engine = create_engine(db_uri)
+
+    # Check all columns in the DataFrame
+    for col in df.columns:
+        df[col] = df[col].apply(try_parse_json)
+
+    # Define a dictionary for dtypes
+    dtypes = {col: JSONB for col in df.columns if df[col].apply(isinstance, args=(dict,)).any()}
+
+    df.to_sql(table_name, engine, if_exists='append', index=False, dtype=dtypes)
+
+# Usage:
+# df is your DataFrame
+# db_uri is your database URI, something like 'postgresql://user:password@localhost:5432/mydatabase'
+insert_into_db(df, 'test_table', db_uri)
+    
 def array_generator4sql(items: list) -> tuple:
     """
     Convert a list of items into a tuple for SQL query.
