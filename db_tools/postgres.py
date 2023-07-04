@@ -3,6 +3,7 @@ import psycopg2.extras as extras
 import pandas as pd
 from io import StringIO
 import json
+import ast
 from urllib.parse import quote_plus
 from sqlalchemy import create_engine, types
 from sqlalchemy.dialects.postgresql import JSONB
@@ -25,7 +26,7 @@ def config_to_uri(param_dic):
 
 def try_parse_json(text):
     try:
-        return json.loads(text)
+        return ast.literal_eval(text)
     except (ValueError, TypeError):
         return text
 
