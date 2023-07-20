@@ -54,7 +54,7 @@ def insert_df_jsons(df, table_name, param_dic):
 # Usage:
 # df is your DataFrame
 # db_uri is your database URI, something like 'postgresql://user:password@localhost:5432/mydatabase'
-insert_into_db(df, 'test_table', db_uri)
+# insert_into_db(df, 'test_table', db_uri)
     
 def array_generator4sql(items: list) -> tuple:
     """
