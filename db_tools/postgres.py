@@ -1,3 +1,5 @@
+#Postgres
+########################################################################################################################
 import psycopg2
 import psycopg2.extras as extras
 import pandas as pd
@@ -217,3 +219,40 @@ def execute_values(param_dic: dict, df: pd.DataFrame, table: str) -> int:
         return 1
     print("execute_values() done")
     cursor.close()
+    
+#Mongo
+########################################################################################################################
+
+from pymongo import MongoClient
+
+def connect_to_mongodb(db_name, collection_name, config):
+    """
+    Connect to a MongoDB database and get a specific collection.
+
+    Parameters:
+    db_name (str): The name of the database to connect to.
+    collection_name (str): The name of the collection to connect to.
+    config (dict): A dictionary with the following keys:
+        - user (str): The username for the MongoDB database.
+        - password (str): The password for the MongoDB database.
+        - host (str): The host where the MongoDB server is running.
+        - port (int): The port where the MongoDB server is listening.
+
+    Returns:
+    collection: The collection object.
+    """
+    # Create a MongoClient object
+    client = MongoClient(
+        config['host'], 
+        config['port'], 
+        username=config['user'], 
+        password=config['password']
+    )
+
+    # Connect to the database
+    db = client[db_name]
+
+    # Get the collection
+    collection = db[collection_name]
+
+    return collection
